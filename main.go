@@ -2,59 +2,27 @@ package main
 
 import (
 	"fmt"
-	"github.com/pingcap/parser"
-	"github.com/pingcap/parser/ast"
-	_ "github.com/pingcap/parser/test_driver"
+	"github.com/xwb1989/sqlparser"
 )
 
-func parse(sql string) (*ast.StmtNode, error) {
-	p := parser.New()
-
-	stmtNodes, _, err := p.Parse(sql, "", "")
-	if err != nil {
-		return nil, err
-	}
-
-	return &stmtNodes[0], nil
-}
-
-type CreateTableInfo struct{
-	tabName string
-	colNames []string
-}
-
-func (v *CreateTableInfo) Enter(in ast.Node) (ast.Node, bool) {
-	if name, ok := in.(*ast.ColumnName); ok {
-		v.colNames = append(v.colNames, name.Name.O)
-	}
-
-	if name, ok := in.(*ast.TableName); ok {
-		v.tabName = name.Name.String()
-	}
-
-	return in, false
-}
-
-func (v *CreateTableInfo) Leave(in ast.Node) (ast.Node, bool) {
-	return in, true
-}
-
-func extract(rootNode *ast.StmtNode) *CreateTableInfo {
-	v := &CreateTableInfo{}
-	(*rootNode).Accept(v)
-	return v
-}
-
 func main() {
-	astNode, err := parse("CREATE TABLE `cms_help` (\n  `id` bigint(20) NOT NULL AUTO_INCREMENT,\n  `category_id` bigint(20) DEFAULT NULL,\n  `icon` varchar(500) DEFAULT NULL,\n  `title` varchar(100) DEFAULT NULL,\n  `show_status` int(1) DEFAULT NULL,\n  `create_time` datetime DEFAULT NULL,\n  `read_count` int(1) DEFAULT NULL,\n  `content` text,\n  PRIMARY KEY (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='帮助表';\n")
+	sql := "CREATE TABLE `cms_help` (\n  `id` bigint(20) NOT NULL AUTO_INCREMENT,\n  `category_id` bigint(20) DEFAULT NULL,\n  `icon` varchar(500) DEFAULT NULL,\n  `title` varchar(100) DEFAULT NULL,\n  `show_status` int(1) DEFAULT NULL,\n  `create_time` datetime DEFAULT NULL,\n  `read_count` int(1) DEFAULT NULL,\n  `content` text,\n  PRIMARY KEY (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='帮助表';\n"
+	stmt, err := sqlparser.Parse(sql)
 	if err != nil {
-		fmt.Printf("parse error: %v\n", err.Error())
-		return
+		// Do something with the err
 	}
 
-	fmt.Println("@startuml")
-	info := extract(astNode)
-	fmt.Println(info.tabName)
-	fmt.Println(info.colNames)
-	fmt.Println("@enduml")
+	// Otherwise do something with stmt
+	switch stmt := stmt.(type) {
+	case *sqlparser.Select:
+		_ = stmt
+	case *sqlparser.Insert:
+	case *sqlparser.DDL:
+		switch stmt.Action {
+		case "create":
+			fmt.Println("..")
+		}
+	default:
+		fmt.Println(stmt)
+	}
 }
