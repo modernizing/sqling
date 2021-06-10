@@ -18,17 +18,12 @@ func parse(sql string) (*ast.StmtNode, error) {
 	return &stmtNodes[0], nil
 }
 
-type Visitor interface {
-	Enter(n ast.Node) (node ast.Node, skipChildren bool)
-	Leave(n ast.Node) (node ast.Node, ok bool)
-}
-
-type colX struct{
+type CreateTableInfo struct{
 	tabName string
 	colNames []string
 }
 
-func (v *colX) Enter(in ast.Node) (ast.Node, bool) {
+func (v *CreateTableInfo) Enter(in ast.Node) (ast.Node, bool) {
 	if name, ok := in.(*ast.ColumnName); ok {
 		v.colNames = append(v.colNames, name.Name.O)
 	}
@@ -40,12 +35,12 @@ func (v *colX) Enter(in ast.Node) (ast.Node, bool) {
 	return in, false
 }
 
-func (v *colX) Leave(in ast.Node) (ast.Node, bool) {
+func (v *CreateTableInfo) Leave(in ast.Node) (ast.Node, bool) {
 	return in, true
 }
 
-func extract(rootNode *ast.StmtNode) *colX {
-	v := &colX{}
+func extract(rootNode *ast.StmtNode) *CreateTableInfo {
+	v := &CreateTableInfo{}
 	(*rootNode).Accept(v)
 	return v
 }
@@ -57,6 +52,9 @@ func main() {
 		return
 	}
 
-	fmt.Printf("%v\n", extract(astNode))
-
+	fmt.Println("@startuml")
+	info := extract(astNode)
+	fmt.Println(info.tabName)
+	fmt.Println(info.colNames)
+	fmt.Println("@enduml")
 }
