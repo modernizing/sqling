@@ -24,6 +24,7 @@ type Visitor interface {
 }
 
 type colX struct{
+	tabName string
 	colNames []string
 }
 
@@ -31,6 +32,11 @@ func (v *colX) Enter(in ast.Node) (ast.Node, bool) {
 	if name, ok := in.(*ast.ColumnName); ok {
 		v.colNames = append(v.colNames, name.Name.O)
 	}
+
+	if name, ok := in.(*ast.TableName); ok {
+		v.tabName = name.Name.String()
+	}
+
 	return in, false
 }
 
@@ -38,10 +44,10 @@ func (v *colX) Leave(in ast.Node) (ast.Node, bool) {
 	return in, true
 }
 
-func extract(rootNode *ast.StmtNode) []string {
+func extract(rootNode *ast.StmtNode) *colX {
 	v := &colX{}
 	(*rootNode).Accept(v)
-	return v.colNames
+	return v
 }
 
 func main() {
@@ -50,7 +56,7 @@ func main() {
 		fmt.Printf("parse error: %v\n", err.Error())
 		return
 	}
-	
+
 	fmt.Printf("%v\n", extract(astNode))
 
 }
