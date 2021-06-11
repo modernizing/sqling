@@ -10,6 +10,9 @@ Todo:
     - [ ] json
     - [ ] puml
     - [ ] mermaid
+ - [ ] connect to database
+    - [ ] search from: MySQL information_schema.KEY_COLUMN_USAGE
+    - [ ] query select table_name from information_schema.tables where table_schema='csdb' and table_type='base table';
 
 License
 ---
