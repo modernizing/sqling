@@ -6,8 +6,10 @@ Todo:
 
  - [ ] import sql parser
  - [ ] align coco struct
- - [ ] output json
- - [ ] to json
+ - [ ] output
+    - [ ] json
+    - [ ] puml
+    - [ ] mermaid
 
 License
 ---
