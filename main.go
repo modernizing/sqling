@@ -1,23 +1,10 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"github.com/iancoleman/strcase"
 	"github.com/xwb1989/sqlparser"
 	"io/ioutil"
-	"os"
 )
-
-type CocoStruct struct {
-	name   string
-	fields []CocoField
-}
-
-type CocoField struct {
-	name  string
-	fType string
-}
 
 func mysqlTypeToJava(typ string) string {
 	switch typ {
@@ -96,26 +83,3 @@ func main() {
 	writePuml(structs)
 }
 
-func writePuml(structs []CocoStruct) {
-	f, err := os.Create("sqling.puml")
-	check(err)
-	defer f.Close()
-	w := bufio.NewWriter(f)
-
-	_, err = fmt.Fprintln(w, "@startuml")
-	check(err)
-
-	for _, cocoStruct := range structs {
-		_, err = fmt.Fprintln(w, "class "+strcase.ToCamel(cocoStruct.name)+" {")
-
-		for _, field := range cocoStruct.fields {
-			_, err = fmt.Fprintln(w, " - "+strcase.ToCamel(field.name)+": "+field.fType)
-		}
-
-		_, err = fmt.Fprintln(w, "}")
-	}
-
-	_, err = fmt.Fprintln(w, "@enduml")
-
-	w.Flush()
-}
