@@ -2,6 +2,9 @@ package main
 
 import (
 	"fmt"
+	. "github.com/inherd/sqling/converter"
+	. "github.com/inherd/sqling/model"
+	. "github.com/inherd/sqling/render"
 	"github.com/xwb1989/sqlparser"
 	"io/ioutil"
 )
@@ -32,20 +35,19 @@ func main() {
 			var fields []CocoField
 			for _, column := range stmt.TableSpec.Columns {
 				fields = append(fields, CocoField{
-					name:  column.Name.String(),
-					fType: fromMysqlType(column.Type.Type),
+					Name:  column.Name.String(),
+					FieldType: FromMysqlType(column.Type.Type),
 				})
 			}
 
 			cocoStruct := CocoStruct{
-				name:   stmt.NewName.Name.String(),
-				fields: fields,
+				Name:   stmt.NewName.Name.String(),
+				Fields: fields,
 			}
 
 			structs = append(structs, cocoStruct)
 		}
 	}
 
-	writePuml(structs)
+	WritePuml(structs)
 }
-

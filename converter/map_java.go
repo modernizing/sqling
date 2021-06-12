@@ -1,6 +1,6 @@
-package main
+package converter
 
-func fromMysqlType(typ string) string {
+func FromMysqlType(typ string) string {
 	switch typ {
 	case "bit":
 		return "Boolean"
