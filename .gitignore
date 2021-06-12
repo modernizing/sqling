@@ -1,4 +1,5 @@
 .idea
 mall.sql
+!_fixtures/mall.sql
 sqling.png
 *.puml
