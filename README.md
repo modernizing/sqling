@@ -4,8 +4,9 @@
 
 Todo:
 
- - [ ] import sql parser
+ - [x] import sql parser
  - [ ] align coco struct
+ - [ ] use cobra as cli tools
  - [ ] output
     - [ ] json
     - [ ] puml
