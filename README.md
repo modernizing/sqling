@@ -5,6 +5,10 @@
 Todo:
 
  - [x] import sql parser
+ - [x] render
+    - [ ] mermaid
+    - [ ] puml
+    - [ ] graphviz
  - [ ] align coco struct
  - [ ] use cobra as cli tools
  - [ ] output
