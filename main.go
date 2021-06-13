@@ -49,5 +49,5 @@ func main() {
 		}
 	}
 
-	WritePuml(structs)
+	Write(structs)
 }
