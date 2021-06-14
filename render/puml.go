@@ -8,7 +8,7 @@ import (
 	"os"
 )
 
-func check(e error) {
+func Check(e error) {
 	if e != nil {
 		panic(e)
 	}
@@ -16,7 +16,7 @@ func check(e error) {
 
 func Write(structs []CocoStruct) {
 	f, err := os.Create("sqling.puml")
-	check(err)
+	Check(err)
 	defer f.Close()
 	w := bufio.NewWriter(f)
 

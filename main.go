@@ -9,24 +9,16 @@ import (
 	"io/ioutil"
 )
 
-func check(e error) {
-	if e != nil {
-		panic(e)
-	}
-}
-
 func main() {
 	dat, err := ioutil.ReadFile("mall.sql")
-	check(err)
+	Check(err)
 	sql := string(dat)
 
 	stmt, err := sqlparser.Parse(sql)
 	if err != nil {
-		// Do something with the err
 		fmt.Println(err)
 	}
 
-	// Otherwise do something with stmt
 	var structs []CocoStruct
 	switch stmt := stmt.(type) {
 	case *sqlparser.DDL:
