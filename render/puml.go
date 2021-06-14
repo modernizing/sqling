@@ -15,7 +15,8 @@ func Check(e error) {
 }
 
 func Write(structs []CocoStruct) {
-	f, err := os.Create("sqling.puml")
+	fileName := "sqling.puml"
+	f, err := os.Create(fileName)
 	Check(err)
 	defer f.Close()
 	w := bufio.NewWriter(f)
@@ -34,4 +35,6 @@ func Write(structs []CocoStruct) {
 	fmt.Fprintln(w, "@enduml")
 
 	w.Flush()
+
+	fmt.Println("write to file: " + fileName)
 }
