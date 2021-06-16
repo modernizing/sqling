@@ -26,6 +26,12 @@ func main() {
 	}
 
 	var structs []CocoStruct
+	structs = parseSql(stmt, structs)
+
+	Write(structs)
+}
+
+func parseSql(stmt sqlparser.Statement, structs []CocoStruct) []CocoStruct {
 	switch stmt := stmt.(type) {
 	case *sqlparser.DDL:
 		switch stmt.Action {
@@ -33,7 +39,7 @@ func main() {
 			var fields []CocoField
 			for _, column := range stmt.TableSpec.Columns {
 				fields = append(fields, CocoField{
-					Name:  column.Name.String(),
+					Name:      column.Name.String(),
 					FieldType: FromMysqlType(column.Type.Type),
 				})
 			}
@@ -46,6 +52,5 @@ func main() {
 			structs = append(structs, cocoStruct)
 		}
 	}
-
-	Write(structs)
+	return structs
 }
