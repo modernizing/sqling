@@ -20,18 +20,18 @@ func main() {
 	Check(err)
 	sql := string(dat)
 
+	var structs []CocoStruct
+	structs = parseSql(sql, structs)
+
+	Write(structs)
+}
+
+func parseSql(sql string, structs []CocoStruct) []CocoStruct {
 	stmt, err := sqlparser.Parse(sql)
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	var structs []CocoStruct
-	structs = parseSql(stmt, structs)
-
-	Write(structs)
-}
-
-func parseSql(stmt sqlparser.Statement, structs []CocoStruct) []CocoStruct {
 	switch stmt := stmt.(type) {
 	case *sqlparser.DDL:
 		switch stmt.Action {
