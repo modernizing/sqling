@@ -7,10 +7,16 @@ import (
 	. "github.com/inherd/sqling/render"
 	"github.com/xwb1989/sqlparser"
 	"io/ioutil"
+	"os"
 )
 
 func main() {
-	dat, err := ioutil.ReadFile("mall.sql")
+	args := os.Args
+	if len(args) < 1 {
+		return
+	}
+
+	dat, err := ioutil.ReadFile(args[1])
 	Check(err)
 	sql := string(dat)
 
