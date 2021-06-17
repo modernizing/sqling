@@ -10,8 +10,8 @@ Todo:
     - [x] puml
     - [ ] graphviz
  - [ ] align coco struct
- - [ ] use cobra as cli tools
- - [ ] output
+ - [x] use cobra as cli tools
+ - [x] output
     - [ ] json
     - [x] puml
     - [ ] mermaid
