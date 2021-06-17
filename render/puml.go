@@ -14,7 +14,7 @@ func Check(e error) {
 	}
 }
 
-func Write(structs []CocoStruct) {
+func Write(structs []CocoStruct, refs []CocoRef) {
 	fileName := "sqling.puml"
 	f, err := os.Create(fileName)
 	Check(err)
@@ -30,6 +30,10 @@ func Write(structs []CocoStruct) {
 		}
 
 		fmt.Fprintln(w, "}")
+	}
+
+	for _, ref := range refs {
+		fmt.Fprintln(w, strcase.ToCamel(ref.Source)+" --> "+strcase.ToCamel(ref.Target))
 	}
 
 	fmt.Fprintln(w, "@enduml")

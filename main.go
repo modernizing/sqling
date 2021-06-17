@@ -23,18 +23,20 @@ func main() {
 	//
 	//filename := args[1]
 	//
-	dat, err := ioutil.ReadFile("_fixtures/mall.sql")
+	dat, err := ioutil.ReadFile("_fixtures/constraint.sql")
 	Check(err)
 	sql := string(dat)
 
 	var structs []CocoStruct
-	toStruct(sql, &structs)
+	var refs    []CocoRef
+	toStruct(sql, &structs, &refs)
 
-	Write(structs)
+	Write(structs, refs)
 }
 
 type database struct {
 	tables []table
+	refs   []CocoRef
 }
 
 type table struct {
@@ -60,6 +62,17 @@ func (v *database) Enter(in ast.Node) (ast.Node, bool) {
 				typ:  v.getType(col.Tp),
 			})
 		}
+
+		for _, constraint := range n.Constraints {
+			if constraint.Refer != nil {
+				target := constraint.Refer.Table.Name.String()
+				v.refs = append(v.refs, CocoRef{
+					Source: tableName,
+					Target: target,
+				})
+			}
+		}
+
 		for _, opt := range n.Options {
 			switch opt.Tp {
 			case ast.TableOptionComment:
@@ -122,7 +135,7 @@ func parse(sql string) (*[]ast.StmtNode, error) {
 	return &stmtNodes, nil
 }
 
-func toStruct(sql string, structs *[]CocoStruct) {
+func toStruct(sql string, structs *[]CocoStruct, refs *[]CocoRef) {
 	astNode, err := parse(sql)
 	if err != nil {
 		fmt.Printf("parse error: %v\n", err.Error())
@@ -133,6 +146,8 @@ func toStruct(sql string, structs *[]CocoStruct) {
 	for _, node := range *astNode {
 		extract(&node, v)
 	}
+
+	*refs = v.refs
 
 	for _, tab := range v.tables {
 		coco := CocoStruct{
