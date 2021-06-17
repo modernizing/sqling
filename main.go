@@ -29,17 +29,21 @@ func main() {
 	// Write(structs)
 }
 
-type colX struct{
+type colX struct {
 	colNames []string
 }
 
 func (v *colX) Enter(in ast.Node) (ast.Node, bool) {
-	if name, ok := in.(*ast.ColumnName); ok {
-		fmt.Println(name)
-		v.colNames = append(v.colNames, name.Name.O)
+	switch in.(type) {
+	case *ast.CreateTableStmt:
+		n := in.(*ast.CreateTableStmt)
+		tableName := n.Table.Name.String()
+		for _, col := range n.Cols {
+			fmt.Println(col)
+		}
+		fmt.Println(tableName)
 	}
 
-	fmt.Println(in.Text())
 	return in, false
 }
 
@@ -47,14 +51,11 @@ func (v *colX) Leave(in ast.Node) (ast.Node, bool) {
 	return in, true
 }
 
-func extract(rootNode *ast.StmtNode) []string {
-	v := &colX{}
+func extract(rootNode *ast.StmtNode, v *colX) {
 	(*rootNode).Accept(v)
-	return v.colNames
 }
 
-
-func parse(sql string) (*ast.StmtNode, error) {
+func parse(sql string) (*[]ast.StmtNode, error) {
 	p := parser.New()
 
 	stmtNodes, _, err := p.Parse(sql, "", "")
@@ -62,9 +63,8 @@ func parse(sql string) (*ast.StmtNode, error) {
 		return nil, err
 	}
 
-	return &stmtNodes[0], nil
+	return &stmtNodes, nil
 }
-
 
 func toStruct(sql string, structs []CocoStruct) {
 	astNode, err := parse(sql)
@@ -73,35 +73,10 @@ func toStruct(sql string, structs []CocoStruct) {
 		return
 	}
 
-	extract(astNode)
-}
+	v := &colX{}
+	for _, node := range *astNode {
+		extract(&node, v)
+	}
 
-//
-//func parseSql(sql string, structs []CocoStruct) []CocoStruct {
-//	stmt, err := sqlparser.Parse(sql)
-//	if err != nil {
-//		fmt.Println(err)
-//	}
-//
-//	switch stmt := stmt.(type) {
-//	case *sqlparser.DDL:
-//		switch stmt.Action {
-//		case "create":
-//			var fields []CocoField
-//			for _, column := range stmt.TableSpec.Columns {
-//				fields = append(fields, CocoField{
-//					Name:      column.Name.String(),
-//					FieldType: FromMysqlType(column.Type.Type),
-//				})
-//			}
-//
-//			cocoStruct := CocoStruct{
-//				Name:   stmt.NewName.Name.String(),
-//				Fields: fields,
-//			}
-//
-//			structs = append(structs, cocoStruct)
-//		}
-//	}
-//	return structs
-//}
+	fmt.Println(v)
+}

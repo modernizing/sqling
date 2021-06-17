@@ -3,3 +3,4 @@ mall.sql
 !_fixtures/mall.sql
 sqling.png
 *.puml
+_fixtures/platform.sql
