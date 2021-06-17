@@ -23,41 +23,45 @@ func main() {
 	//
 	//filename := args[1]
 	//
-	dat, err := ioutil.ReadFile("_fixtures/constraint.sql")
+	dat, err := ioutil.ReadFile("_fixtures/platform.sql")
 	Check(err)
 	sql := string(dat)
 
+	Convert(sql)
+}
+
+func Convert(sql string) {
 	var structs []CocoStruct
-	var refs    []CocoRef
+	var refs []CocoRef
 	toStruct(sql, &structs, &refs)
 
 	Write(structs, refs)
 }
 
-type database struct {
-	tables []table
+type Database struct {
+	tables []Table
 	refs   []CocoRef
 }
 
-type table struct {
+type Table struct {
 	name    string
 	comment string
-	columns []column
+	columns []Column
 }
 
-type column struct {
+type Column struct {
 	name string
 	typ  string
 }
 
-func (v *database) Enter(in ast.Node) (ast.Node, bool) {
+func (v *Database) Enter(in ast.Node) (ast.Node, bool) {
 	switch in.(type) {
 	case *ast.CreateTableStmt:
 		n := in.(*ast.CreateTableStmt)
 		tableName := n.Table.Name.String()
-		tabl := table{name: tableName}
+		tabl := Table{name: tableName}
 		for _, col := range n.Cols {
-			tabl.columns = append(tabl.columns, column{
+			tabl.columns = append(tabl.columns, Column{
 				name: col.Name.String(),
 				typ:  v.getType(col.Tp),
 			})
@@ -90,7 +94,7 @@ func (v *database) Enter(in ast.Node) (ast.Node, bool) {
 	return in, false
 }
 
-func (v *database) getType(ft *types.FieldType) string {
+func (v *Database) getType(ft *types.FieldType) string {
 	switch ft.Tp {
 	case mysql.TypeTiny, mysql.TypeShort, mysql.TypeInt24, mysql.TypeLong, mysql.TypeLonglong,
 		mysql.TypeBit, mysql.TypeYear:
@@ -109,18 +113,16 @@ func (v *database) getType(ft *types.FieldType) string {
 		return "json"
 	case mysql.TypeVarchar, mysql.TypeString:
 		return "varchar"
-	//default:
-	//	fmt.Println(ft.Tp)
 	}
 
 	return "text"
 }
 
-func (v *database) Leave(in ast.Node) (ast.Node, bool) {
+func (v *Database) Leave(in ast.Node) (ast.Node, bool) {
 	return in, true
 }
 
-func extract(rootNode *ast.StmtNode, v *database) {
+func extract(rootNode *ast.StmtNode, v *Database) {
 	(*rootNode).Accept(v)
 }
 
@@ -142,7 +144,7 @@ func toStruct(sql string, structs *[]CocoStruct, refs *[]CocoRef) {
 		return
 	}
 
-	v := &database{}
+	v := &Database{}
 	for _, node := range *astNode {
 		extract(&node, v)
 	}
