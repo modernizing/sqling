@@ -24,9 +24,9 @@ func main() {
 	sql := string(dat)
 
 	var structs []CocoStruct
-	toStruct(sql, structs)
+	toStruct(sql, &structs)
 
-	// Write(structs)
+	Write(structs)
 }
 
 type database struct {
@@ -51,6 +51,7 @@ func (v *database) Enter(in ast.Node) (ast.Node, bool) {
 		tableName := n.Table.Name.String()
 		tabl := table{name: tableName}
 		for _, col := range n.Cols {
+			fmt.Println(col.Tp)
 			tabl.columns = append(tabl.columns, column{
 				name: col.Name.String(),
 				typ:  col.Tp.String(),
@@ -64,7 +65,6 @@ func (v *database) Enter(in ast.Node) (ast.Node, bool) {
 		}
 
 		if n.Table.TableInfo != nil {
-			fmt.Println(n.Table.TableInfo.Comment)
 			tabl.comment = n.Table.TableInfo.Comment
 		}
 
@@ -93,7 +93,7 @@ func parse(sql string) (*[]ast.StmtNode, error) {
 	return &stmtNodes, nil
 }
 
-func toStruct(sql string, structs []CocoStruct) {
+func toStruct(sql string, structs *[]CocoStruct) {
 	astNode, err := parse(sql)
 	if err != nil {
 		fmt.Printf("parse error: %v\n", err.Error())
@@ -105,4 +105,20 @@ func toStruct(sql string, structs []CocoStruct) {
 		extract(&node, v)
 	}
 
+	for _, tab := range v.tables {
+		coco := CocoStruct{
+			Name:   tab.name,
+			Comment: tab.comment,
+			Fields: nil,
+		}
+
+		for _, col := range tab.columns {
+			coco.Fields = append(coco.Fields, CocoField{
+				Name:      col.name,
+				FieldType: col.typ,
+			})
+		}
+
+		*structs = append(*structs, coco)
+	}
 }
