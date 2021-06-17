@@ -4,3 +4,4 @@ mall.sql
 sqling.png
 *.puml
 _fixtures/platform.sql
+output/
