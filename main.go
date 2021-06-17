@@ -39,19 +39,19 @@ func Convert(sql string) {
 }
 
 type Database struct {
-	tables []Table
-	refs   []CocoRef
+	Tables []Table
+	Refs   []CocoRef
 }
 
 type Table struct {
-	name    string
-	comment string
-	columns []Column
+	Name    string
+	Comment string
+	Columns []Column
 }
 
 type Column struct {
-	name string
-	typ  string
+	Name string
+	Tp   string
 }
 
 func (v *Database) Enter(in ast.Node) (ast.Node, bool) {
@@ -59,18 +59,18 @@ func (v *Database) Enter(in ast.Node) (ast.Node, bool) {
 	case *ast.CreateTableStmt:
 		n := in.(*ast.CreateTableStmt)
 		tableName := n.Table.Name.String()
-		tabl := Table{name: tableName}
+		tabl := Table{Name: tableName}
 		for _, col := range n.Cols {
-			tabl.columns = append(tabl.columns, Column{
-				name: col.Name.String(),
-				typ:  v.getType(col.Tp),
+			tabl.Columns = append(tabl.Columns, Column{
+				Name: col.Name.String(),
+				Tp:   v.getType(col.Tp),
 			})
 		}
 
 		for _, constraint := range n.Constraints {
 			if constraint.Refer != nil {
 				target := constraint.Refer.Table.Name.String()
-				v.refs = append(v.refs, CocoRef{
+				v.Refs = append(v.Refs, CocoRef{
 					Source: tableName,
 					Target: target,
 				})
@@ -80,15 +80,15 @@ func (v *Database) Enter(in ast.Node) (ast.Node, bool) {
 		for _, opt := range n.Options {
 			switch opt.Tp {
 			case ast.TableOptionComment:
-				tabl.comment = opt.StrValue
+				tabl.Comment = opt.StrValue
 			}
 		}
 
 		if n.Table.TableInfo != nil {
-			tabl.comment = n.Table.TableInfo.Comment
+			tabl.Comment = n.Table.TableInfo.Comment
 		}
 
-		v.tables = append(v.tables, tabl)
+		v.Tables = append(v.Tables, tabl)
 	}
 
 	return in, false
@@ -149,19 +149,19 @@ func toStruct(sql string, structs *[]CocoStruct, refs *[]CocoRef) {
 		extract(&node, v)
 	}
 
-	*refs = v.refs
+	*refs = v.Refs
 
-	for _, tab := range v.tables {
+	for _, tab := range v.Tables {
 		coco := CocoStruct{
-			Name:   tab.name,
-			Comment: tab.comment,
+			Name:   tab.Name,
+			Comment: tab.Comment,
 			Fields: nil,
 		}
 
-		for _, col := range tab.columns {
+		for _, col := range tab.Columns {
 			coco.Fields = append(coco.Fields, CocoField{
-				Name:      col.name,
-				FieldType: converter.FromMysqlType(col.typ),
+				Name:      col.Name,
+				FieldType: converter.FromMysqlType(col.Tp),
 			})
 		}
 
