@@ -1,7 +1,9 @@
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/inherd/sqling/model"
 	. "github.com/inherd/sqling/parser"
 	. "github.com/inherd/sqling/render"
 	"github.com/spf13/cobra"
@@ -9,20 +11,47 @@ import (
 	"os"
 )
 
+type SqlingJson struct {
+	Structs []model.CocoStruct
+	Refs    []model.CocoRef
+}
+
 var (
-	path        string
-	output_type string
-	rootCmd     = &cobra.Command{
+	path       string
+	outputType string
+	rootCmd    = &cobra.Command{
 		Use:   "sqling",
 		Short: "Sqling is a modeling tool to build from SQL file",
 		Long:  `Sqling is a modeling tool to build from SQL file.`,
 		Run: func(cmd *cobra.Command, args []string) {
+			if len(path) < 0 {
+				fmt.Println("not input path")
+				return
+			}
 			dat, err := ioutil.ReadFile(path)
 			Check(err)
-			sql := string(dat)
-			parseSql, refs := ParseSql(sql)
 
-			Write(parseSql, refs)
+			sql := string(dat)
+			structs, refs := ParseSql(sql)
+
+			if outputType == "json" {
+				output := &SqlingJson{
+					Structs: structs,
+					Refs:    refs,
+				}
+
+				str, err := json.MarshalIndent(output, "", "\t")
+				if err != nil {
+					fmt.Println(err)
+					return
+				}
+				fmt.Println(string(str))
+
+				err = ioutil.WriteFile("output.json", str, 0644)
+				return
+			}
+
+			Write(structs, refs)
 		},
 	}
 )
@@ -38,7 +67,7 @@ func init() {
 	cobra.OnInitialize(initConfig)
 
 	rootCmd.PersistentFlags().StringVarP(&path, "input", "i", "", "input file")
-	rootCmd.PersistentFlags().StringVarP(&output_type, "output_type", "t", "puml", "output file type, support for puml, json")
+	rootCmd.PersistentFlags().StringVarP(&outputType, "output_type", "t", "puml", "output file type, support for puml, json")
 }
 
 func initConfig() {

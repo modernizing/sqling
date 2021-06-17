@@ -5,3 +5,4 @@ sqling.png
 *.puml
 _fixtures/platform.sql
 output/
+output.json
