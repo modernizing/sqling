@@ -5,16 +5,11 @@
 Todo:
 
  - [x] import sql parser
- - [x] render
-    - [ ] mermaid
-    - [x] puml
-    - [ ] graphviz
  - [ ] align coco struct
  - [x] use cobra as cli tools
  - [x] output
-    - [ ] json
+    - [x] json
     - [x] puml
-    - [ ] mermaid
  - [ ] connect to database
     - [ ] search from: MySQL information_schema.KEY_COLUMN_USAGE
     - [ ] query select table_name from information_schema.tables where table_schema='csdb' and table_type='base table';
