@@ -2,6 +2,10 @@ package main
 
 import (
 	"fmt"
+	"github.com/inherd/sqling/converter"
+	"github.com/pingcap/parser/mysql"
+	"github.com/pingcap/parser/types"
+
 	//. "github.com/inherd/sqling/converter"
 	. "github.com/inherd/sqling/model"
 	. "github.com/inherd/sqling/render"
@@ -51,10 +55,9 @@ func (v *database) Enter(in ast.Node) (ast.Node, bool) {
 		tableName := n.Table.Name.String()
 		tabl := table{name: tableName}
 		for _, col := range n.Cols {
-			fmt.Println(col.Tp)
 			tabl.columns = append(tabl.columns, column{
 				name: col.Name.String(),
-				typ:  col.Tp.String(),
+				typ:  v.getType(col.Tp),
 			})
 		}
 		for _, opt := range n.Options {
@@ -72,6 +75,32 @@ func (v *database) Enter(in ast.Node) (ast.Node, bool) {
 	}
 
 	return in, false
+}
+
+func (v *database) getType(ft *types.FieldType) string {
+	switch ft.Tp {
+	case mysql.TypeTiny, mysql.TypeShort, mysql.TypeInt24, mysql.TypeLong, mysql.TypeLonglong,
+		mysql.TypeBit, mysql.TypeYear:
+		return "int"
+	case mysql.TypeFloat, mysql.TypeDouble:
+		return "float"
+	case mysql.TypeNewDecimal:
+		return "decimal"
+	case mysql.TypeDate, mysql.TypeDatetime:
+		return "datetime"
+	case mysql.TypeTimestamp:
+		return "timestamp"
+	case mysql.TypeDuration:
+		return "duration"
+	case mysql.TypeJSON:
+		return "json"
+	case mysql.TypeVarchar, mysql.TypeString:
+		return "varchar"
+	//default:
+	//	fmt.Println(ft.Tp)
+	}
+
+	return "text"
 }
 
 func (v *database) Leave(in ast.Node) (ast.Node, bool) {
@@ -115,7 +144,7 @@ func toStruct(sql string, structs *[]CocoStruct) {
 		for _, col := range tab.columns {
 			coco.Fields = append(coco.Fields, CocoField{
 				Name:      col.name,
-				FieldType: col.typ,
+				FieldType: converter.FromMysqlType(col.typ),
 			})
 		}
 
