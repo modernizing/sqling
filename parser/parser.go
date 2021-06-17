@@ -98,11 +98,14 @@ func parseString(sql string) (*[]ast.StmtNode, error) {
 	return &stmtNodes, nil
 }
 
-func ParseSql(sql string, structs *[]model.CocoStruct, refs *[]model.CocoRef) {
+func ParseSql(sql string) ([]model.CocoStruct, []model.CocoRef) {
+	var structs []model.CocoStruct
+	var refs []model.CocoRef
+
 	astNode, err := parseString(sql)
 	if err != nil {
 		fmt.Printf("parse error: %v\n", err.Error())
-		return
+		return nil, nil
 	}
 
 	v := &Database{}
@@ -110,7 +113,7 @@ func ParseSql(sql string, structs *[]model.CocoStruct, refs *[]model.CocoRef) {
 		extract(&node, v)
 	}
 
-	*refs = v.Refs
+	refs = v.Refs
 
 	for _, tab := range v.Tables {
 		coco := model.CocoStruct{
@@ -126,6 +129,8 @@ func ParseSql(sql string, structs *[]model.CocoStruct, refs *[]model.CocoRef) {
 			})
 		}
 
-		*structs = append(*structs, coco)
+		structs = append(structs, coco)
 	}
+
+	return structs, refs
 }

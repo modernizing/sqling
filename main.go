@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/inherd/sqling/model"
 	. "github.com/inherd/sqling/parser"
 	. "github.com/inherd/sqling/render"
 	_ "github.com/pingcap/tidb/types/parser_driver"
@@ -24,9 +23,5 @@ func main() {
 }
 
 func Convert(sql string) {
-	var structs []model.CocoStruct
-	var refs []model.CocoRef
-	ParseSql(sql, &structs, &refs)
-
-	Write(structs, refs)
+	Write(ParseSql(sql))
 }
