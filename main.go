@@ -29,29 +29,56 @@ func main() {
 	// Write(structs)
 }
 
-type colX struct {
-	colNames []string
+type database struct {
+	tables []table
 }
 
-func (v *colX) Enter(in ast.Node) (ast.Node, bool) {
+type table struct {
+	name    string
+	comment string
+	columns []column
+}
+
+type column struct {
+	name string
+	typ  string
+}
+
+func (v *database) Enter(in ast.Node) (ast.Node, bool) {
 	switch in.(type) {
 	case *ast.CreateTableStmt:
 		n := in.(*ast.CreateTableStmt)
 		tableName := n.Table.Name.String()
+		tabl := table{name: tableName}
 		for _, col := range n.Cols {
-			fmt.Println(col)
+			tabl.columns = append(tabl.columns, column{
+				name: col.Name.String(),
+				typ:  col.Tp.String(),
+			})
 		}
-		fmt.Println(tableName)
+		for _, opt := range n.Options {
+			switch opt.Tp {
+			case ast.TableOptionComment:
+				tabl.comment = opt.StrValue
+			}
+		}
+
+		if n.Table.TableInfo != nil {
+			fmt.Println(n.Table.TableInfo.Comment)
+			tabl.comment = n.Table.TableInfo.Comment
+		}
+
+		v.tables = append(v.tables, tabl)
 	}
 
 	return in, false
 }
 
-func (v *colX) Leave(in ast.Node) (ast.Node, bool) {
+func (v *database) Leave(in ast.Node) (ast.Node, bool) {
 	return in, true
 }
 
-func extract(rootNode *ast.StmtNode, v *colX) {
+func extract(rootNode *ast.StmtNode, v *database) {
 	(*rootNode).Accept(v)
 }
 
@@ -73,10 +100,9 @@ func toStruct(sql string, structs []CocoStruct) {
 		return
 	}
 
-	v := &colX{}
+	v := &database{}
 	for _, node := range *astNode {
 		extract(&node, v)
 	}
 
-	fmt.Println(v)
 }
