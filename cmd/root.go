@@ -38,7 +38,7 @@ var (
 				return
 			}
 
-			OutputUml(structs, refs)
+			OutputPuml(structs, refs)
 		},
 	}
 )

@@ -24,7 +24,7 @@ func (v *Database) Enter(in ast.Node) (ast.Node, bool) {
 		for _, col := range n.Cols {
 			tabl.Columns = append(tabl.Columns, model.Column{
 				Name: col.Name.String(),
-				Tp:   v.getType(col.Tp),
+				Tp:   v.toMysqlType(col.Tp),
 			})
 		}
 
@@ -55,7 +55,7 @@ func (v *Database) Enter(in ast.Node) (ast.Node, bool) {
 	return in, false
 }
 
-func (v *Database) getType(ft *types.FieldType) string {
+func (v *Database) toMysqlType(ft *types.FieldType) string {
 	switch ft.Tp {
 	case mysql.TypeTiny, mysql.TypeShort, mysql.TypeInt24, mysql.TypeLong, mysql.TypeLonglong,
 		mysql.TypeBit, mysql.TypeYear:
@@ -83,10 +83,6 @@ func (v *Database) Leave(in ast.Node) (ast.Node, bool) {
 	return in, true
 }
 
-func extract(rootNode *ast.StmtNode, v *Database) {
-	(*rootNode).Accept(v)
-}
-
 func parseString(sql string) (*[]ast.StmtNode, error) {
 	p := parser.New()
 
@@ -99,9 +95,6 @@ func parseString(sql string) (*[]ast.StmtNode, error) {
 }
 
 func ParseSql(sql string) ([]model.CocoStruct, []model.CocoRef) {
-	var structs []model.CocoStruct
-	var refs []model.CocoRef
-
 	astNode, err := parseString(sql)
 	if err != nil {
 		fmt.Printf("parse error: %v\n", err.Error())
@@ -110,8 +103,15 @@ func ParseSql(sql string) ([]model.CocoStruct, []model.CocoRef) {
 
 	v := &Database{}
 	for _, node := range *astNode {
-		extract(&node, v)
+		(node).Accept(v)
 	}
+
+	return toCocoStructs(v)
+}
+
+func toCocoStructs(v *Database) ([]model.CocoStruct, []model.CocoRef) {
+	var structs []model.CocoStruct
+	var refs []model.CocoRef
 
 	refs = v.Refs
 
