@@ -6,8 +6,8 @@
 
 1. download sqling from [release](https://github.com/inherd/sqling/releases) or
 
-```
-go ge github.com/inherd/sqling
+```bash
+go get github.com/inherd/sqling
 ```
 
 2. dump sql file
@@ -23,7 +23,7 @@ mysqldump -u root -p -h localhost --no-data mall > database.sql
 
 CLI
 
-```
+```bash
 Sqling is a modeling tool to build from SQL file.
 
 Usage:
