@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"fmt"
-	. "github.com/inherd/sqling/parser"
-	. "github.com/inherd/sqling/render"
+	"github.com/inherd/sqling/modeling/parser"
+	"github.com/inherd/sqling/modeling/render"
 	"github.com/spf13/cobra"
 	"io/ioutil"
 	"os"
@@ -18,17 +18,17 @@ var (
 		Long:  `Sqling is a modeling tool to build from SQL file.`,
 		Run: func(cmd *cobra.Command, args []string) {
 			dat, err := ioutil.ReadFile(path)
-			Check(err)
+			render.Check(err)
 
 			sql := string(dat)
-			structs, refs := ParseSql(sql)
+			structs, refs := parser.ParseSql(sql)
 
 			if outputType == "json" {
-				OutputJson(structs, refs)
+				render.OutputJson(structs, refs)
 				return
 			}
 
-			OutputPuml(structs, refs)
+			render.OutputPuml(structs, refs)
 		},
 	}
 )

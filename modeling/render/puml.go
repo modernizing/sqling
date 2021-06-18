@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"github.com/iancoleman/strcase"
-	. "github.com/inherd/sqling/model"
+	"github.com/inherd/sqling/modeling/model"
 	"os"
 )
 
@@ -14,7 +14,7 @@ func Check(e error) {
 	}
 }
 
-func OutputPuml(structs []CocoStruct, refs []CocoRef) {
+func OutputPuml(structs []model.CocoStruct, refs []model.CocoRef) {
 	fileName := "sqling.puml"
 	f, err := os.Create(fileName)
 	Check(err)

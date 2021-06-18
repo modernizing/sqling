@@ -2,8 +2,8 @@ package parser
 
 import (
 	"fmt"
-	"github.com/inherd/sqling/converter"
-	"github.com/inherd/sqling/model"
+	converter2 "github.com/inherd/sqling/modeling/converter"
+	model2 "github.com/inherd/sqling/modeling/model"
 	"github.com/pingcap/parser"
 	"github.com/pingcap/parser/ast"
 	"github.com/pingcap/parser/mysql"
@@ -11,8 +11,8 @@ import (
 )
 
 type Database struct {
-	Tables []model.Table
-	Refs   []model.CocoRef
+	Tables []model2.Table
+	Refs   []model2.CocoRef
 }
 
 func (v *Database) Enter(in ast.Node) (ast.Node, bool) {
@@ -20,9 +20,9 @@ func (v *Database) Enter(in ast.Node) (ast.Node, bool) {
 	case *ast.CreateTableStmt:
 		n := in.(*ast.CreateTableStmt)
 		tableName := n.Table.Name.String()
-		tabl := model.Table{Name: tableName}
+		tabl := model2.Table{Name: tableName}
 		for _, col := range n.Cols {
-			tabl.Columns = append(tabl.Columns, model.Column{
+			tabl.Columns = append(tabl.Columns, model2.Column{
 				Name: col.Name.String(),
 				Tp:   v.toMysqlType(col.Tp),
 			})
@@ -31,7 +31,7 @@ func (v *Database) Enter(in ast.Node) (ast.Node, bool) {
 		for _, constraint := range n.Constraints {
 			if constraint.Refer != nil {
 				target := constraint.Refer.Table.Name.String()
-				v.Refs = append(v.Refs, model.CocoRef{
+				v.Refs = append(v.Refs, model2.CocoRef{
 					Source: tableName,
 					Target: target,
 				})
@@ -94,7 +94,7 @@ func parseString(sql string) (*[]ast.StmtNode, error) {
 	return &stmtNodes, nil
 }
 
-func ParseSql(sql string) ([]model.CocoStruct, []model.CocoRef) {
+func ParseSql(sql string) ([]model2.CocoStruct, []model2.CocoRef) {
 	astNode, err := parseString(sql)
 	if err != nil {
 		fmt.Printf("parse error: %v\n", err.Error())
@@ -109,23 +109,23 @@ func ParseSql(sql string) ([]model.CocoStruct, []model.CocoRef) {
 	return toCocoStructs(v)
 }
 
-func toCocoStructs(v *Database) ([]model.CocoStruct, []model.CocoRef) {
-	var structs []model.CocoStruct
-	var refs []model.CocoRef
+func toCocoStructs(v *Database) ([]model2.CocoStruct, []model2.CocoRef) {
+	var structs []model2.CocoStruct
+	var refs []model2.CocoRef
 
 	refs = v.Refs
 
 	for _, tab := range v.Tables {
-		coco := model.CocoStruct{
+		coco := model2.CocoStruct{
 			Name:    tab.Name,
 			Comment: tab.Comment,
 			Fields:  nil,
 		}
 
 		for _, col := range tab.Columns {
-			coco.Fields = append(coco.Fields, model.CocoField{
+			coco.Fields = append(coco.Fields, model2.CocoField{
 				Name:      col.Name,
-				FieldType: converter.FromMysqlType(col.Tp),
+				FieldType: converter2.FromMysqlType(col.Tp),
 			})
 		}
 
