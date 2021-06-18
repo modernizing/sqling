@@ -1,6 +1,41 @@
 # SQLing
 
-> SQL to PUML
+> build domain model from SQL file
+
+## Usage
+
+1. download sqling from [release](https://github.com/inherd/sqling/releases) or
+
+```
+go ge github.com/inherd/sqling
+```
+
+2. dump sql file
+
+```bash
+mysqldump -u root -p -h localhost --no-data mall > database.sql
+```
+
+3. run `sqling -i database.sql`
+
+
+### CLI Usage
+
+CLI
+
+```
+Sqling is a modeling tool to build from SQL file.
+
+Usage:
+  sqling [flags]
+
+Flags:
+  -h, --help                 help for sqling
+  -i, --input string         input file
+  -t, --output_type string   output file type, support for puml, json (default "puml")
+```
+
+## Todo
 
 Todo:
 
@@ -11,8 +46,7 @@ Todo:
     - [x] puml
 
 Thinks:
- - [ ] dump schema
-    - `mysqldump -u root -p -h localhost --no-data mall > database.sql`
+
  - [ ] connect to database
     - [ ] search from: MySQL information_schema.KEY_COLUMN_USAGE
     - [ ] query select table_name from information_schema.tables where table_schema='csdb' and table_type='base table';

@@ -17,10 +17,6 @@ var (
 		Short: "Sqling is a modeling tool to build from SQL file",
 		Long:  `Sqling is a modeling tool to build from SQL file.`,
 		Run: func(cmd *cobra.Command, args []string) {
-			if len(path) < 0 {
-				fmt.Println("not input path")
-				return
-			}
 			dat, err := ioutil.ReadFile(path)
 			Check(err)
 
@@ -47,8 +43,10 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	rootCmd.PersistentFlags().StringVarP(&path, "input", "i", "", "input file")
-	rootCmd.PersistentFlags().StringVarP(&outputType, "output_type", "t", "puml", "output file type, support for puml, json")
+	rootCmd.Flags().StringVarP(&path, "input", "i", "", "input file (required)")
+	rootCmd.Flags().StringVarP(&outputType, "output_type", "t", "puml", "output file type, support for puml, json")
+
+	rootCmd.MarkFlagRequired("input")
 }
 
 func initConfig() {

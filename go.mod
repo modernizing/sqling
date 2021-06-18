@@ -11,7 +11,7 @@ require (
 	github.com/pingcap/parser v0.0.0-20200623164729-3a18f1e5dceb
 	github.com/pingcap/pd v0.0.0-20190424024702-bd1e2496a669 // indirect
 	github.com/pingcap/tidb v1.1.0-beta.0.20200630082100-328b6d0a955c
-	github.com/spf13/cobra v1.1.3 // indirect
+	github.com/spf13/cobra v1.1.3
 	github.com/struCoder/pidusage v0.1.2 // indirect
 	github.com/twinj/uuid v1.0.0 // indirect
 	github.com/unrolled/render v0.0.0-20180914162206-b9786414de4d // indirect
