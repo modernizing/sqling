@@ -14,7 +14,7 @@ func Check(e error) {
 	}
 }
 
-func Write(structs []CocoStruct, refs []CocoRef) {
+func OutputUml(structs []CocoStruct, refs []CocoRef) {
 	fileName := "sqling.puml"
 	f, err := os.Create(fileName)
 	Check(err)

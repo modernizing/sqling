@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/inherd/sqling/model"
 	. "github.com/inherd/sqling/parser"
@@ -35,23 +34,11 @@ var (
 			structs, refs := ParseSql(sql)
 
 			if outputType == "json" {
-				output := &SqlingJson{
-					Structs: structs,
-					Refs:    refs,
-				}
-
-				str, err := json.MarshalIndent(output, "", "\t")
-				if err != nil {
-					fmt.Println(err)
-					return
-				}
-				fmt.Println(string(str))
-
-				err = ioutil.WriteFile("output.json", str, 0644)
+				OutputJson(structs, refs)
 				return
 			}
 
-			Write(structs, refs)
+			OutputUml(structs, refs)
 		},
 	}
 )
