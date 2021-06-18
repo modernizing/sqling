@@ -3,15 +3,20 @@ package render
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/inherd/sqling/cmd"
 	. "github.com/inherd/sqling/model"
 	"io/ioutil"
 )
 
+
+type SqlingJson struct {
+	Structs []CocoStruct
+	Refs    []CocoRef
+}
+
 func OutputJson(structs []CocoStruct, refs []CocoRef) {
 	filename := "sqling.json"
 
-	output := &cmd.SqlingJson{
+	output := &SqlingJson{
 		Structs: structs,
 		Refs:    refs,
 	}

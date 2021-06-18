@@ -2,18 +2,12 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/inherd/sqling/model"
 	. "github.com/inherd/sqling/parser"
 	. "github.com/inherd/sqling/render"
 	"github.com/spf13/cobra"
 	"io/ioutil"
 	"os"
 )
-
-type SqlingJson struct {
-	Structs []model.CocoStruct
-	Refs    []model.CocoRef
-}
 
 var (
 	path       string
