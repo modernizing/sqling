@@ -5,11 +5,14 @@
 Todo:
 
  - [x] import sql parser
- - [ ] align coco struct
  - [x] use cobra as cli tools
  - [x] output
     - [x] json
     - [x] puml
+
+Thinks:
+ - [ ] dump schema
+    - `mysqldump -u root -p -h localhost --no-data mall > database.sql`
  - [ ] connect to database
     - [ ] search from: MySQL information_schema.KEY_COLUMN_USAGE
     - [ ] query select table_name from information_schema.tables where table_schema='csdb' and table_type='base table';

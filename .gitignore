@@ -6,3 +6,4 @@ sqling.png
 _fixtures/platform.sql
 output/
 output.json
+database.sql
