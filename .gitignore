@@ -7,3 +7,4 @@ _fixtures/platform.sql
 output/
 output.json
 database.sql
+sqling

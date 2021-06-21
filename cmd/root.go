@@ -12,18 +12,11 @@ import (
 var (
 	path       string
 	outputType string
-	database   string
 	rootCmd    = &cobra.Command{
 		Use:   "sqling",
 		Short: "Sqling is a modeling tool to build from SQL file",
 		Long:  `Sqling is a modeling tool to build from SQL file.`,
 		Run: func(cmd *cobra.Command, args []string) {
-			if database == "oracle" {
-				parser.PlSql(path)
-
-				return
-			}
-
 			dat, err := ioutil.ReadFile(path)
 			render.Check(err)
 
@@ -53,7 +46,6 @@ func init() {
 
 	rootCmd.Flags().StringVarP(&path, "input", "i", "", "input file (required)")
 	rootCmd.Flags().StringVarP(&outputType, "output_type", "t", "puml", "output file type, support for puml, json")
-	rootCmd.Flags().StringVarP(&database, "database", "d", "mysql", "database language type, support for oracle, mysql")
 
 	rootCmd.MarkFlagRequired("input")
 }
