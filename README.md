@@ -46,6 +46,8 @@ Todo:
     - [x] puml
  - [ ] web runtime
     - [ ] web assembly
+ - [ ] bad smell
+    - https://github.com/rory/django-sql-inspector
 
 Thinks:
 
