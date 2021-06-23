@@ -44,6 +44,8 @@ Todo:
  - [x] output
     - [x] json
     - [x] puml
+ - [ ] web runtime
+    - [ ] web assembly
 
 Thinks:
 
