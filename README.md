@@ -48,7 +48,7 @@ Todo:
 Plan:
 
  - [ ] analysis
-    - [ ] [xo](https://github.com/xo/xo) Command line tool to generate idiomatic Go code for SQL databases supporting PostgreSQL, MySQL, SQLite, Oracle, and Microsoft SQL Server 
+    - [ ] [xo](https://github.com/xo/xo) Command line tool to generate idiomatic Go code for SQL databases supporting PostgreSQL, MySQL, SQLite, Oracle, and Microsoft SQL Server
  - [ ] web runtime
     - [ ] web assembly
  - [ ] bad smell
